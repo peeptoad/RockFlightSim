@@ -40,8 +40,8 @@
     <!-- Results section -->
     <div id="results" style="display: none;">
         <h2>Simulation Results</h2>
-        <p><strong>Estimated Maximum Altitude:</strong> <span id="maxAltitude"></span> meters</p>
-        <p><strong>Estimated Maximum Speed:</strong> <span id="maxSpeed"></span> m/s</p>
+        <p><strong>Estimated Maximum Altitude:</strong> <span id="maxAltitude"></span> feet</p>
+        <p><strong>Estimated Maximum Speed:</strong> <span id="maxSpeed"></span> mph</p>
     </div>
 
     <script>
@@ -92,7 +92,7 @@
                 }
             }
 
-            return { maxAltitude: rocketAltitude, maxSpeed: rocketVelocity };
+            return { maxAltitude: rocketAltitude * 3.28084, maxSpeed: rocketVelocity * 2.23694 };
         }
 
         // Function to collect data from the form and initiate simulation
@@ -125,7 +125,3 @@
     </script>
 </body>
 </html>
-
-
-
-
