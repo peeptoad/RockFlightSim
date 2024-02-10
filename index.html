@@ -80,16 +80,16 @@
         // Function to simulate rocket flight
         function simulateFlight() {
             // Retrieve rocket parameters and engine characteristics
-            let rocketLength = parseFloat(getValue('rocketLength')) * 0.0254 * 39.3701; // Convert inches to meters, then to feet
-            let rocketDiameter = parseFloat(getValue('rocketDiameter')) * 0.0254 * 39.3701; // Convert inches to meters, then to feet
-            let rocketWeight = parseFloat(getValue('rocketWeight')) * 0.453592; // Convert pounds to kilograms
-            let specificImpulse = parseFloat(getValue('specificImpulse')) * 4.44822; // Convert pounds to newtons
-            let burnTime = parseFloat(getValue('burnTime'));
-            let ejectionChargeTime = parseFloat(getValue('ejectionChargeTime'));
+            let rocketLength = parseFloat(getValue('rocketLength')); // inches
+            let rocketDiameter = parseFloat(getValue('rocketDiameter')); // inches
+            let rocketWeight = parseFloat(getValue('rocketWeight')); // pounds
+            let specificImpulse = parseFloat(getValue('specificImpulse')); // pounds-seconds
+            let burnTime = parseFloat(getValue('burnTime')); // seconds
+            let ejectionChargeTime = parseFloat(getValue('ejectionChargeTime')); // seconds
             
             // Retrieve atmospheric conditions
-            let airDensity = parseFloat(getValue('airDensity'));
-            let windSpeed = parseFloat(getValue('windSpeed'));
+            let airDensity = parseFloat(getValue('airDensity')); // kg/m³
+            let windSpeed = parseFloat(getValue('windSpeed')); // m/s
 
             // Validate inputs
             if (isNaN(rocketLength) || isNaN(rocketDiameter) || isNaN(rocketWeight) ||
@@ -99,21 +99,29 @@
                 return;
             }
 
-            // Simulation time step (seconds)
-            let dt = 0.1;
+            // Conversion factors
+            const METER_TO_FEET = 3.28084;
+            const MPS_TO_MPH = 2.23694;
+
+            // Convert rocket dimensions and weight
+            rocketLength /= METER_TO_FEET; // Convert inches to feet
+            rocketDiameter /= METER_TO_FEET; // Convert inches to feet
+            rocketWeight *= 32.174; // Convert pounds to pounds-force
 
             // Initialize variables
             let altitude = 0;
             let speed = 0;
 
-            // Simulate flight until burnout
-            let t = 0; // Initial time
-            while (t < burnTime) {
-                // Calculate thrust based on specific impulse and burn time
-                let thrust = specificImpulse * rocketWeight / burnTime; // F = Isp * (m * g) / burnTime
+            // Simulation time step (seconds)
+            const dt = 0.1;
 
+            // Simulate flight until burnout
+            for (let t = 0; t < burnTime; t += dt) {
+                // Calculate thrust based on specific impulse and burn time
+                let thrust = specificImpulse * rocketWeight / burnTime; // pounds-force
+                
                 // Calculate drag force based on air density, rocket dimensions, and speed
-                let dragForce = 0.5 * airDensity * Math.PI * (rocketDiameter / 2) ** 2 * speed ** 2; // F = 0.5 * rho * A * v^2
+                let dragForce = 0.5 * airDensity * Math.PI * (rocketDiameter / 2) ** 2 * speed ** 2; // pounds-force
                 
                 // Calculate net force
                 let netForce = thrust - dragForce;
@@ -122,32 +130,25 @@
                 let acceleration = netForce / rocketWeight;
 
                 // Update speed and altitude
-                speed += acceleration * dt * 2.23694; // Convert meters per second to miles per hour
-                altitude += speed * dt * 3.28084; // Convert meters to feet
+                speed += acceleration * dt * MPS_TO_MPH; // Convert m/s to mph
+                altitude += speed * dt * METER_TO_FEET; // Convert meters to feet
 
                 // Apply wind speed
-                altitude += windSpeed * dt * 3.28084; // Convert meters to feet
-
-                // Increment time
-                t += dt;
+                altitude += windSpeed * dt * METER_TO_FEET; // Convert m/s to feet
             }
 
             // Display results
-            setValue('altitude', altitude.toFixed(2));
-            setValue('speed', speed.toFixed(2));
+            document.getElementById('altitude').textContent = altitude.toFixed(2);
+            document.getElementById('speed').textContent = speed.toFixed(2);
         }
 
         // Helper function to retrieve input value by ID
         function getValue(id) {
             return document.getElementById(id).value;
         }
-
-        // Helper function to set text content by ID
-        function setValue(id, value) {
-            document.getElementById(id).textContent = value;
-        }
     </script>
 </body>
 </html>
+
 
 
