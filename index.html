@@ -63,7 +63,6 @@
 
         // Simulation parameters
         const timeStep = 0.05; // seconds
-        const simulationTime = Math.max(burnTime, ejectionChargeTime) + 10; // seconds
         let currentTime, rocketAltitude, rocketVelocity, rocketAcceleration;
 
         // Canvas setup
@@ -88,7 +87,7 @@
             rocketAcceleration = 0;
 
             // Main simulation loop
-            while (currentTime < simulationTime) {
+            while (currentTime < Math.max(burnTime, ejectionChargeTime) + 10) {
                 // Calculate forces
                 let gravityForce = rocketWeight * GRAVITY;
                 let dragForce = calculateDragForce(rocketVelocity);
@@ -146,13 +145,13 @@
 
             // Draw rocket body
             ctx.fillStyle = 'blue';
-            ctx.fillRect(100, rocketY, rocketLength * scaleFactor, rocketDiameter * scaleFactor);
+            ctx.fillRect(100, rocketY - rocketDiameter * scaleFactor / 2, rocketLength * scaleFactor, rocketDiameter * scaleFactor);
 
             // Draw rocket nose
             ctx.beginPath();
-            ctx.moveTo(100 + rocketLength * scaleFactor, rocketY + rocketDiameter * scaleFactor / 2);
-            ctx.lineTo(100 + rocketLength * scaleFactor, rocketY - rocketDiameter * scaleFactor / 2);
-            ctx.lineTo(100 + rocketLength * scaleFactor + 20, rocketY);
+            ctx.moveTo(100 + rocketLength * scaleFactor, rocketY);
+            ctx.lineTo(100 + rocketLength * scaleFactor + 20, rocketY - rocketDiameter * scaleFactor / 2);
+            ctx.lineTo(100 + rocketLength * scaleFactor + 20, rocketY + rocketDiameter * scaleFactor / 2);
             ctx.closePath();
             ctx.fill();
         }
