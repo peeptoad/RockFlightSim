@@ -25,7 +25,7 @@
         <label for="engineName">Engine Name:</label>
         <input type="text" id="engineName" required><br>
 
-        <label for="engineImpulse">Engine Specific Impulse (in seconds):</label>
+        <label for="engineImpulse">Engine Specific Impulse (in Newton-seconds):</label>
         <input type="number" id="engineImpulse" required><br>
 
         <label for="engineBurnTime">Engine Burn Time (in seconds):</label>
@@ -38,12 +38,61 @@
     </form>
 
     <script>
+        // Function to calculate thrust based on a linear thrust curve
+        function calculateThrust(time, engine) {
+            // If the time is before the burn starts or after it ends, return 0 thrust
+            if (time < 0 || time > engine.burnTime) {
+                return 0;
+            }
+
+            // Calculate thrust based on a linear interpolation
+            // For simplicity, assuming constant thrust during the burn
+            let maxThrust = engine.impulse / engine.burnTime; // Assuming constant thrust for now
+            return maxThrust;
+        }
+
+        // Function to simulate rocket flight
+        function simulateFlight(rocket, engine) {
+            // Rocket parameters
+            let rocketMass = rocket.weight / 2.20462; // Convert pounds to kg
+            let rocketDiameter = rocket.diameter; // inches
+            let rocketCd = 0.75; // drag coefficient
+
+            // Simulation parameters
+            let timeStep = 0.01; // seconds
+            let totalTime = engine.burnTime + 10; // seconds
+
+            // Initial conditions
+            let rocketVelocity = 0; // m/s
+            let rocketAltitude = 0; // meters
+
+            // Simulation loop
+            for (let t = 0; t < totalTime; t += timeStep) {
+                // Calculate forces
+                let rocketArea = Math.PI * (rocketDiameter / 2 / 39.37) ** 2; // Convert diameter to meters
+                let dragForce = 0.5 * rocketCd * rocketArea * rocketVelocity ** 2; // drag force
+                let thrustForce = calculateThrust(t, engine); // calculate thrust based on engine performance
+                let totalForce = thrustForce - dragForce - rocketMass * 9.81; // total force (thrust - drag - weight)
+
+                // Update velocity and altitude using Newton's second law
+                let acceleration = totalForce / rocketMass;
+                rocketVelocity += acceleration * timeStep;
+                rocketAltitude += rocketVelocity * timeStep;
+
+                // Check if rocket has reached maximum altitude
+                if (rocketVelocity <= 0) {
+                    break;
+                }
+            }
+
+            return { maxAltitude: rocketAltitude, maxSpeed: rocketVelocity };
+        }
+
+        // Function to collect data from the form and initiate simulation
         document.getElementById('rocketForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            collectData();
-        });
 
-        function collectData() {
+            // Collect rocket and engine data
             let rocket = {
                 name: document.getElementById('rocketName').value,
                 length: parseFloat(document.getElementById('rocketLength').value),
@@ -53,28 +102,20 @@
 
             let engine = {
                 name: document.getElementById('engineName').value,
-                impulse: parseFloat(document.getElementById('engineImpulse').value) * 9.81, // Convert to Newton-seconds
+                impulse: parseFloat(document.getElementById('engineImpulse').value),
                 burnTime: parseFloat(document.getElementById('engineBurnTime').value),
                 delay: parseFloat(document.getElementById('engineDelay').value)
             };
 
-            logData(rocket, engine);
-        }
+            // Simulate rocket flight
+            let result = simulateFlight(rocket, engine);
 
-        function logData(rocket, engine) {
-            console.log("Rocket Information:");
-            console.log("Name:", rocket.name);
-            console.log("Length:", rocket.length, "inches");
-            console.log("Diameter:", rocket.diameter, "inches");
-            console.log("Weight:", rocket.weight, "pounds");
-
-            console.log("\nEngine Information:");
-            console.log("Name:", engine.name);
-            console.log("Specific Impulse (Newton-seconds):", engine.impulse);
-            console.log("Burn Time:", engine.burnTime, "seconds");
-            console.log("Delay Charge:", engine.delay, "seconds");
-        }
+            // Output results
+            console.log("Estimated Maximum Altitude:", result.maxAltitude.toFixed(2), "meters");
+            console.log("Estimated Maximum Speed:", result.maxSpeed.toFixed(2), "m/s");
+        });
     </script>
 </body>
 </html>
+
 
