@@ -107,7 +107,8 @@
             let speed = 0;
 
             // Simulate flight until burnout
-            for (let t = 0; t < burnTime; t += dt) {
+            let t = 0; // Initial time
+            while (t < burnTime) {
                 // Calculate thrust based on specific impulse and burn time
                 let thrust = specificImpulse * rocketWeight / burnTime; // F = Isp * (m * g) / burnTime
 
@@ -126,6 +127,9 @@
 
                 // Apply wind speed
                 altitude += windSpeed * dt * 3.28084; // Convert meters to feet
+
+                // Increment time
+                t += dt;
             }
 
             // Display results
@@ -145,4 +149,5 @@
     </script>
 </body>
 </html>
+
 
