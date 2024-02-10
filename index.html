@@ -71,6 +71,10 @@
         <span id="altitude"></span>
     </div>
     <div>
+        <label for="maxAltitude">Max Altitude (feet):</label>
+        <span id="maxAltitude"></span>
+    </div>
+    <div>
         <label for="speed">Speed (mph):</label>
         <span id="speed"></span>
     </div>
@@ -111,6 +115,7 @@
             // Initialize variables
             let altitude = 0;
             let speed = 0;
+            let maxAltitude = 0; // Initialize maximum altitude
 
             // Simulation time step (seconds)
             const dt = 0.1;
@@ -135,10 +140,14 @@
 
                 // Apply wind speed
                 altitude += windSpeed * dt * METER_TO_FEET; // Convert m/s to feet
+
+                // Update maximum altitude
+                maxAltitude = Math.max(maxAltitude, altitude);
             }
 
             // Display results
             document.getElementById('altitude').textContent = altitude.toFixed(2);
+            document.getElementById('maxAltitude').textContent = maxAltitude.toFixed(2);
             document.getElementById('speed').textContent = speed.toFixed(2);
         }
 
