@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,7 +93,7 @@
                 }
             }
 
-            return { maxAltitude: rocketAltitude * 3.28084, maxSpeed: rocketVelocity * 2.23694 };
+            return { maxAltitude: rocketAltitude * 3.28084, maxSpeed: Math.abs(rocketVelocity * 2.23694) };
         }
 
         // Function to collect data from the form and initiate simulation
