@@ -37,6 +37,13 @@
         <button type="submit">Submit</button>
     </form>
 
+    <!-- Results section -->
+    <div id="results" style="display: none;">
+        <h2>Simulation Results</h2>
+        <p><strong>Estimated Maximum Altitude:</strong> <span id="maxAltitude"></span> meters</p>
+        <p><strong>Estimated Maximum Speed:</strong> <span id="maxSpeed"></span> m/s</p>
+    </div>
+
     <script>
         // Function to calculate thrust based on a linear thrust curve
         function calculateThrust(time, engine) {
@@ -110,13 +117,15 @@
             // Simulate rocket flight
             let result = simulateFlight(rocket, engine);
 
-            // Output results
-            console.log("Estimated Maximum Altitude:", result.maxAltitude.toFixed(2), "meters");
-            console.log("Estimated Maximum Speed:", result.maxSpeed.toFixed(2), "m/s");
+            // Display results
+            document.getElementById('maxAltitude').textContent = result.maxAltitude.toFixed(2);
+            document.getElementById('maxSpeed').textContent = result.maxSpeed.toFixed(2);
+            document.getElementById('results').style.display = 'block';
         });
     </script>
 </body>
 </html>
+
 
 
 
