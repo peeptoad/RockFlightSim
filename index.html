@@ -13,8 +13,41 @@
 <body>
     <h1>Rocket Flight Simulator</h1>
     
+    <!-- Rocket Parameters -->
+    <h2>Rocket Parameters</h2>
+    <div>
+        <label for="rocketLength">Rocket Length (inches):</label>
+        <input type="number" id="rocketLength">
+    </div>
+    <div>
+        <label for="rocketDiameter">Rocket Diameter (inches):</label>
+        <input type="number" id="rocketDiameter">
+    </div>
+    <div>
+        <label for="rocketWeight">Rocket Weight (pounds):</label>
+        <input type="number" id="rocketWeight">
+    </div>
+    
+    <!-- Engine Characteristics -->
+    <h2>Engine Characteristics</h2>
+    <div>
+        <label for="specificImpulse">Specific Impulse (seconds):</label>
+        <input type="number" id="specificImpulse">
+    </div>
+    <div>
+        <label for="burnTime">Burn Time (seconds):</label>
+        <input type="number" id="burnTime">
+    </div>
+    <div>
+        <label for="ejectionChargeTime">Ejection Charge Time (seconds):</label>
+        <input type="number" id="ejectionChargeTime">
+    </div>
+
     <!-- Canvas for Visualization -->
     <canvas id="flightCanvas" width="800" height="400"></canvas>
+
+    <!-- Button to start simulation -->
+    <button onclick="simulateFlight()">Start Simulation</button>
 
     <!-- Script to simulate flight -->
     <script>
@@ -22,40 +55,31 @@
         const GRAVITY = 9.81; // m/s^2
         const AIR_DENSITY = 1.225; // kg/m^3 (standard air density)
 
-        // Rocket parameters (retrieve from localStorage)
-        const rocketLength = parseFloat(localStorage.getItem('rocketLength')) * 0.0254; // Convert inches to meters
-        const rocketDiameter = parseFloat(localStorage.getItem('rocketDiameter')) * 0.0254; // Convert inches to meters
-        const rocketWeight = parseFloat(localStorage.getItem('rocketWeight')) * 0.453592; // Convert pounds to kilograms
+        // Rocket parameters
+        let rocketLength, rocketDiameter, rocketWeight;
 
-        // Engine characteristics (retrieve from localStorage)
-        const specificImpulse = parseFloat(localStorage.getItem('specificImpulse'));
-        const burnTime = parseFloat(localStorage.getItem('burnTime'));
-        const ejectionChargeTime = parseFloat(localStorage.getItem('ejectionChargeTime'));
+        // Engine characteristics
+        let specificImpulse, burnTime, ejectionChargeTime;
 
         // Simulation parameters
         const timeStep = 0.05; // seconds
         const simulationTime = Math.max(burnTime, ejectionChargeTime) + 10; // seconds
-        let currentTime = 0;
-        let rocketAltitude = 0; // meters
-        let rocketVelocity = 0; // m/s
-        let rocketAcceleration = 0; // m/s^2
+        let currentTime, rocketAltitude, rocketVelocity, rocketAcceleration;
 
         // Canvas setup
         const canvas = document.getElementById('flightCanvas');
         const ctx = canvas.getContext('2d');
         const scaleFactor = 20; // Pixels per meter
 
-        // Main simulation loop
+        // Function to simulate flight
         function simulateFlight() {
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw ground
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
-            ctx.strokeStyle = 'black';
-            ctx.stroke();
+            // Retrieve rocket parameters and engine characteristics from inputs
+            rocketLength = parseFloat(document.getElementById('rocketLength').value) * 0.0254; // Convert inches to meters
+            rocketDiameter = parseFloat(document.getElementById('rocketDiameter').value) * 0.0254; // Convert inches to meters
+            rocketWeight = parseFloat(document.getElementById('rocketWeight').value) * 0.453592; // Convert pounds to kilograms
+            specificImpulse = parseFloat(document.getElementById('specificImpulse').value);
+            burnTime = parseFloat(document.getElementById('burnTime').value);
+            ejectionChargeTime = parseFloat(document.getElementById('ejectionChargeTime').value);
 
             // Reset simulation variables
             currentTime = 0;
@@ -63,7 +87,7 @@
             rocketVelocity = 0;
             rocketAcceleration = 0;
 
-            // Simulation loop
+            // Main simulation loop
             while (currentTime < simulationTime) {
                 // Calculate forces
                 let gravityForce = rocketWeight * GRAVITY;
@@ -78,15 +102,15 @@
                 // Draw rocket on canvas
                 drawRocket();
 
+                // Update time
+                currentTime += timeStep;
+
                 // Check for end of burn
                 if (currentTime >= burnTime && currentTime < ejectionChargeTime) {
                     // Rocket engine burnout, continue coasting
                     ctx.fillStyle = 'red';
                     ctx.fillText('Engine burnout', 10, 20);
                 }
-
-                // Update time
-                currentTime += timeStep;
             }
         }
 
@@ -107,6 +131,16 @@
 
         // Function to draw rocket on canvas
         function drawRocket() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw ground
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+
             // Convert altitude to canvas coordinates
             let rocketY = canvas.height / 2 - rocketAltitude * scaleFactor;
 
@@ -125,4 +159,5 @@
     </script>
 </body>
 </html>
+
 
