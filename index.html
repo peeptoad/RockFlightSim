@@ -23,22 +23,22 @@
     <!-- Rocket Parameters -->
     <h2>Rocket Parameters</h2>
     <div>
-        <label for="rocketLength">Rocket Length (meters):</label>
+        <label for="rocketLength">Rocket Length (inches):</label>
         <input type="number" id="rocketLength" min="0">
     </div>
     <div>
-        <label for="rocketDiameter">Rocket Diameter (meters):</label>
+        <label for="rocketDiameter">Rocket Diameter (inches):</label>
         <input type="number" id="rocketDiameter" min="0">
     </div>
     <div>
-        <label for="rocketWeight">Rocket Weight (kg):</label>
+        <label for="rocketWeight">Rocket Weight (pounds):</label>
         <input type="number" id="rocketWeight" min="0">
     </div>
     
     <!-- Engine Characteristics -->
     <h2>Engine Characteristics</h2>
     <div>
-        <label for="specificImpulse">Specific Impulse (seconds):</label>
+        <label for="specificImpulse">Specific Impulse (pounds-seconds):</label>
         <input type="number" id="specificImpulse" min="0">
     </div>
     <div>
@@ -67,11 +67,11 @@
     <!-- Results -->
     <h2>Results</h2>
     <div>
-        <label for="altitude">Altitude (meters):</label>
+        <label for="altitude">Altitude (feet):</label>
         <span id="altitude"></span>
     </div>
     <div>
-        <label for="speed">Speed (m/s):</label>
+        <label for="speed">Speed (mph):</label>
         <span id="speed"></span>
     </div>
 
@@ -80,10 +80,10 @@
         // Function to simulate rocket flight
         function simulateFlight() {
             // Retrieve rocket parameters and engine characteristics
-            let rocketLength = parseFloat(getValue('rocketLength'));
-            let rocketDiameter = parseFloat(getValue('rocketDiameter'));
-            let rocketWeight = parseFloat(getValue('rocketWeight'));
-            let specificImpulse = parseFloat(getValue('specificImpulse'));
+            let rocketLength = parseFloat(getValue('rocketLength')) * 0.0254 * 39.3701; // Convert inches to meters, then to feet
+            let rocketDiameter = parseFloat(getValue('rocketDiameter')) * 0.0254 * 39.3701; // Convert inches to meters, then to feet
+            let rocketWeight = parseFloat(getValue('rocketWeight')) * 0.453592; // Convert pounds to kilograms
+            let specificImpulse = parseFloat(getValue('specificImpulse')) * 4.44822; // Convert pounds to newtons
             let burnTime = parseFloat(getValue('burnTime'));
             let ejectionChargeTime = parseFloat(getValue('ejectionChargeTime'));
             
@@ -109,7 +109,7 @@
             // Simulate flight until burnout
             for (let t = 0; t < burnTime; t += dt) {
                 // Calculate thrust based on specific impulse and burn time
-                let thrust = specificImpulse * (rocketWeight * 9.81) / burnTime; // F = Isp * (m * g) / burnTime
+                let thrust = specificImpulse * rocketWeight / burnTime; // F = Isp * (m * g) / burnTime
 
                 // Calculate drag force based on air density, rocket dimensions, and speed
                 let dragForce = 0.5 * airDensity * Math.PI * (rocketDiameter / 2) ** 2 * speed ** 2; // F = 0.5 * rho * A * v^2
@@ -121,11 +121,11 @@
                 let acceleration = netForce / rocketWeight;
 
                 // Update speed and altitude
-                speed += acceleration * dt;
-                altitude += speed * dt;
+                speed += acceleration * dt * 2.23694; // Convert meters per second to miles per hour
+                altitude += speed * dt * 3.28084; // Convert meters to feet
 
                 // Apply wind speed
-                altitude += windSpeed * dt;
+                altitude += windSpeed * dt * 3.28084; // Convert meters to feet
             }
 
             // Display results
@@ -145,3 +145,4 @@
     </script>
 </body>
 </html>
+
