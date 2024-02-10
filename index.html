@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,8 +76,8 @@
             // Simulation loop
             for (let t = 0; t < totalTime; t += timeStep) {
                 // Calculate forces
-                let rocketArea = Math.PI * (rocketDiameter / 2 / 39.37) ** 2; // Convert diameter to meters
-                let dragForce = 0.5 * rocketCd * rocketArea * rocketVelocity ** 2; // drag force
+                let rocketArea = Math.PI * Math.pow((rocketDiameter / 2 / 12), 2); // Convert diameter to feet
+                let dragForce = 0.5 * rocketCd * rocketArea * Math.pow(rocketVelocity / 3600, 2); // drag force
                 let thrustForce = calculateThrust(t, engine); // calculate thrust based on engine performance
                 let totalForce = thrustForce - dragForce - rocketMass * 9.81; // total force (thrust - drag - weight)
 
