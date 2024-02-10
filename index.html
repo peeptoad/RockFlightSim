@@ -38,17 +38,17 @@
     <!-- Engine Characteristics -->
     <h2>Engine Characteristics</h2>
     <div>
+        <label for="specificImpulse">Specific Impulse (seconds):</label>
+        <input type="number" id="specificImpulse" min="0">
+    </div>
+    <div>
         <label for="burnTime">Burn Time (seconds):</label>
         <input type="number" id="burnTime" min="0">
     </div>
-    <div id="thrustCurveInputs">
-        <label>Thrust Curve:</label>
-        <div>
-            <input type="number" class="timeInput" placeholder="Time (seconds)">
-            <input type="number" class="thrustInput" placeholder="Thrust (Newtons)">
-        </div>
+    <div>
+        <label for="ejectionChargeTime">Ejection Charge Time (seconds):</label>
+        <input type="number" id="ejectionChargeTime" min="0">
     </div>
-    <button onclick="addThrustDataPoint()">Add Data Point</button>
     
     <!-- Atmospheric Conditions -->
     <h2>Atmospheric Conditions</h2>
@@ -77,89 +77,71 @@
 
     <!-- Script -->
     <script>
-        let thrustCurve = []; // Array to store thrust curve data
-
-        // Function to add a new data point to the thrust curve
-        function addThrustDataPoint() {
-            let timeInput = document.createElement('input');
-            timeInput.type = 'number';
-            timeInput.className = 'timeInput';
-            timeInput.placeholder = 'Time (seconds)';
-
-            let thrustInput = document.createElement('input');
-            thrustInput.type = 'number';
-            thrustInput.className = 'thrustInput';
-            thrustInput.placeholder = 'Thrust (Newtons)';
-
-            document.getElementById('thrustCurveInputs').appendChild(timeInput);
-            document.getElementById('thrustCurveInputs').appendChild(thrustInput);
-        }
-
         // Function to simulate rocket flight
         function simulateFlight() {
             // Retrieve rocket parameters and engine characteristics
-            let rocketLength = parseFloat(document.getElementById('rocketLength').value);
-            let rocketDiameter = parseFloat(document.getElementById('rocketDiameter').value);
-            let rocketWeight = parseFloat(document.getElementById('rocketWeight').value);
-            let burnTime = parseFloat(document.getElementById('burnTime').value);
-            let airDensity = parseFloat(document.getElementById('airDensity').value);
-            let windSpeed = parseFloat(document.getElementById('windSpeed').value);
+            let rocketLength = parseFloat(getValue('rocketLength'));
+            let rocketDiameter = parseFloat(getValue('rocketDiameter'));
+            let rocketWeight = parseFloat(getValue('rocketWeight'));
+            let specificImpulse = parseFloat(getValue('specificImpulse'));
+            let burnTime = parseFloat(getValue('burnTime'));
+            let ejectionChargeTime = parseFloat(getValue('ejectionChargeTime'));
+            
+            // Retrieve atmospheric conditions
+            let airDensity = parseFloat(getValue('airDensity'));
+            let windSpeed = parseFloat(getValue('windSpeed'));
 
             // Validate inputs
             if (isNaN(rocketLength) || isNaN(rocketDiameter) || isNaN(rocketWeight) ||
-                isNaN(burnTime) || isNaN(airDensity) || isNaN(windSpeed)) {
-                alert("Please enter valid numeric values for all rocket parameters.");
+                isNaN(specificImpulse) || isNaN(burnTime) || isNaN(ejectionChargeTime) ||
+                isNaN(airDensity) || isNaN(windSpeed)) {
+                alert("Please enter valid numeric values for all inputs.");
                 return;
             }
 
-            // Retrieve thrust curve data
-            let timeInputs = document.querySelectorAll('.timeInput');
-            let thrustInputs = document.querySelectorAll('.thrustInput');
+            // Simulation time step (seconds)
+            let dt = 0.1;
 
-            thrustCurve = []; // Clear previous data
-            for (let i = 0; i < timeInputs.length; i++) {
-                let time = parseFloat(timeInputs[i].value);
-                let thrust = parseFloat(thrustInputs[i].value);
-                if (!isNaN(time) && !isNaN(thrust)) {
-                    thrustCurve.push({ time, thrust });
-                }
-            }
-
-            // Simulation logic using thrust curve data
-            let dt = 0.1; // Time step (seconds)
+            // Initialize variables
             let altitude = 0;
             let speed = 0;
 
+            // Simulate flight until burnout
             for (let t = 0; t < burnTime; t += dt) {
-                let thrust = getThrust(t); // Interpolate thrust from thrust curve
-                let dragForce = 0.5 * airDensity * Math.PI * (rocketDiameter / 2) ** 2 * speed ** 2;
+                // Calculate thrust based on specific impulse and burn time
+                let thrust = specificImpulse * (rocketWeight * 9.81) / burnTime; // F = Isp * (m * g) / burnTime
+
+                // Calculate drag force based on air density, rocket dimensions, and speed
+                let dragForce = 0.5 * airDensity * Math.PI * (rocketDiameter / 2) ** 2 * speed ** 2; // F = 0.5 * rho * A * v^2
+                
+                // Calculate net force
                 let netForce = thrust - dragForce;
+
+                // Calculate acceleration
                 let acceleration = netForce / rocketWeight;
+
+                // Update speed and altitude
                 speed += acceleration * dt;
                 altitude += speed * dt;
+
+                // Apply wind speed
                 altitude += windSpeed * dt;
             }
 
             // Display results
-            document.getElementById('altitude').textContent = altitude.toFixed(2);
-            document.getElementById('speed').textContent = speed.toFixed(2);
+            setValue('altitude', altitude.toFixed(2));
+            setValue('speed', speed.toFixed(2));
         }
 
-        // Function to interpolate thrust from thrust curve
-        function getThrust(time) {
-            for (let i = 0; i < thrustCurve.length - 1; i++) {
-                if (thrustCurve[i].time <= time && time <= thrustCurve[i + 1].time) {
-                    let t1 = thrustCurve[i].time;
-                    let t2 = thrustCurve[i + 1].time;
-                    let thrust1 = thrustCurve[i].thrust;
-                    let thrust2 = thrustCurve[i + 1].thrust;
-                    let slope = (thrust2 - thrust1) / (t2 - t1);
-                    return thrust1 + slope * (time - t1);
-                }
-            }
-            return 0; // Default to zero thrust if no data is available
+        // Helper function to retrieve input value by ID
+        function getValue(id) {
+            return document.getElementById(id).value;
+        }
+
+        // Helper function to set text content by ID
+        function setValue(id, value) {
+            document.getElementById(id).textContent = value;
         }
     </script>
 </body>
 </html>
-
