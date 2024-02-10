@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Flight Simulator</title>
+    <style>
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            margin-bottom: 10px;
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rocket Flight Simulator</h1>
+    
+    <!-- Rocket Parameters -->
+    <h2>Rocket Parameters</h2>
+    <div>
+        <label for="rocketLength">Rocket Length (meters):</label>
+        <input type="number" id="rocketLength">
+    </div>
+    <div>
+        <label for="rocketDiameter">Rocket Diameter (meters):</label>
+        <input type="number" id="rocketDiameter">
+    </div>
+    <div>
+        <label for="rocketWeight">Rocket Weight (kg):</label>
+        <input type="number" id="rocketWeight">
+    </div>
+    
+    <!-- Engine Characteristics -->
+    <h2>Engine Characteristics</h2>
+    <div>
+        <label for="specificImpulse">Specific Impulse (seconds):</label>
+        <input type="number" id="specificImpulse">
+    </div>
+    <div>
+        <label for="burnTime">Burn Time (seconds):</label>
+        <input type="number" id="burnTime">
+    </div>
+    <div>
+        <label for="ejectionChargeTime">Ejection Charge Time (seconds):</label>
+        <input type="number" id="ejectionChargeTime">
+    </div>
+    
+    <!-- Buttons -->
+    <button onclick="saveData()">Save Data</button>
+    <button onclick="simulateFlight()">Simulate Flight</button>
+
+    <!-- Canvas for Visualization -->
+    <canvas id="flightCanvas" width="600" height="400"></canvas>
+
+    <!-- Script to store data and simulate flight -->
+    <script>
+        // Function to save rocket parameters and engine characteristics
+        function saveData() {
+            let rocketLength = parseFloat(document.getElementById('rocketLength').value);
+            let rocketDiameter = parseFloat(document.getElementById('rocketDiameter').value);
+            let rocketWeight = parseFloat(document.getElementById('rocketWeight').value);
+            let specificImpulse = parseFloat(document.getElementById('specificImpulse').value);
+            let burnTime = parseFloat(document.getElementById('burnTime').value);
+            let ejectionChargeTime = parseFloat(document.getElementById('ejectionChargeTime').value);
+            
+            // Store data in localStorage for later use
+            localStorage.setItem('rocketLength', rocketLength);
+            localStorage.setItem('rocketDiameter', rocketDiameter);
+            localStorage.setItem('rocketWeight', rocketWeight);
+            localStorage.setItem('specificImpulse', specificImpulse);
+            localStorage.setItem('burnTime', burnTime);
+            localStorage.setItem('ejectionChargeTime', ejectionChargeTime);
+            
+            alert('Data saved successfully!');
+        }
+
+        // Function to simulate rocket flight
+        function simulateFlight() {
+            // Retrieve data from localStorage
+            let rocketLength = parseFloat(localStorage.getItem('rocketLength'));
+            let rocketDiameter = parseFloat(localStorage.getItem('rocketDiameter'));
+            let rocketWeight = parseFloat(localStorage.getItem('rocketWeight'));
+            let specificImpulse = parseFloat(localStorage.getItem('specificImpulse'));
+            let burnTime = parseFloat(localStorage.getItem('burnTime'));
+            let ejectionChargeTime = parseFloat(localStorage.getItem('ejectionChargeTime'));
+
+            // Simulate flight using the retrieved data
+            // (Implementation of flight simulation would go here)
+            console.log('Rocket parameters:', {rocketLength, rocketDiameter, rocketWeight});
+            console.log('Engine characteristics:', {specificImpulse, burnTime, ejectionChargeTime});
+            alert('Flight simulation complete!');
+
+            // Visualize flight trajectory (dummy visualization)
+            drawFlightTrajectory();
+        }
+
+        // Function to draw flight trajectory on canvas
+        function drawFlightTrajectory() {
+            let canvas = document.getElementById('flightCanvas');
+            let ctx = canvas.getContext('2d');
+
+            // Dummy trajectory (a simple arc for demonstration)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 100, 0, Math.PI * 2);
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
