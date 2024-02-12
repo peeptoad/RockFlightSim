@@ -25,8 +25,8 @@
         <label for="engineName">Engine Name:</label>
         <input type="text" id="engineName" required><br>
 
-        <label for="engineThrust">Engine Total Thrust (in Newtons):</label>
-        <input type="number" id="engineThrust" step="0.01" required><br>
+        <label for="engineAverageThrust">Engine Average Thrust (in pounds):</label>
+        <input type="number" id="engineAverageThrust" step="0.01" required><br>
 
         <label for="engineBurnTime">Engine Burn Time (in seconds):</label>
         <input type="number" id="engineBurnTime" step="0.01" required><br>
@@ -45,18 +45,7 @@
     </div>
 
     <script>
-        // Function to calculate thrust based on total thrust
-        function calculateThrust(time, engine) {
-            // If the time is before the burn starts or after it ends, return 0 thrust
-            if (time < 0 || time > engine.burnTime) {
-                return 0;
-            }
-
-            // Assuming constant thrust during the burn
-            return engine.totalThrust / engine.burnTime;
-        }
-
-        // Function to simulate rocket flight
+        // Function to simulate rocket flight with average thrust
         function simulateFlight(rocket, engine) {
             // Rocket parameters
             let rocketMass = rocket.weight * 0.453592; // Convert pounds to kg
@@ -71,13 +60,15 @@
             let rocketVelocity = 0; // m/s
             let rocketAltitude = 0; // meters
 
+            // Calculate average thrust
+            let averageThrust = engine.averageThrust * 4.44822; // Convert pounds to Newtons
+
             // Simulation loop
             for (let t = 0; t < totalTime; t += timeStep) {
                 // Calculate forces
                 let rocketArea = Math.PI * Math.pow((rocketDiameter / 2 / 12), 2); // Convert diameter to feet
                 let dragForce = 0.5 * rocketCd * rocketArea * Math.pow(rocketVelocity / 3600, 2); // drag force
-                let thrustForce = calculateThrust(t, engine); // calculate thrust based on engine performance
-                let totalForce = thrustForce - dragForce - rocketMass * 9.81; // total force (thrust - drag - weight)
+                let totalForce = averageThrust - dragForce - rocketMass * 9.81; // total force (thrust - drag - weight)
 
                 // Update velocity and altitude using Newton's second law
                 let acceleration = totalForce / rocketMass;
@@ -107,7 +98,7 @@
 
             let engine = {
                 name: document.getElementById('engineName').value,
-                totalThrust: parseFloat(document.getElementById('engineThrust').value),
+                averageThrust: parseFloat(document.getElementById('engineAverageThrust').value),
                 burnTime: parseFloat(document.getElementById('engineBurnTime').value),
                 delay: parseFloat(document.getElementById('engineDelay').value)
             };
@@ -123,4 +114,5 @@
     </script>
 </body>
 </html>
+
 
